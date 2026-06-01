@@ -1,5 +1,8 @@
 package service;
 
+import exception.CampoInvalidoException;
+import exception.TarefaDuplicadaException;
+import exception.TarefaNaoEncontradaException;
 import model.StatusTarefa;
 import model.Tarefa;
 
@@ -11,17 +14,8 @@ public class TarefaService {
 
     private final List<Tarefa> tarefas;
 
-    private static final String ERRO_CAMPOS =
-            "Campos vazios";
-
-    private static final String ERRO_DUPLICIDADE =
-            "Tarefa já existe";
-
-    private static final String ERRO_NAO_ENCONTRADA =
-            "Tarefa não encontrada";
-
     public TarefaService() {
-        this.tarefas = new ArrayList<>();
+        tarefas = new ArrayList<>();
     }
 
     public void cadastrar(
@@ -42,15 +36,15 @@ public class TarefaService {
 
     public void alterarStatus(
             String titulo,
-            StatusTarefa novoStatus) {
+            StatusTarefa status) {
 
         Tarefa tarefa =
                 buscarTarefa(titulo)
                         .orElseThrow(() ->
-                                new IllegalArgumentException(
-                                        ERRO_NAO_ENCONTRADA));
+                                new TarefaNaoEncontradaException(
+                                        "Tarefa não encontrada."));
 
-        tarefa.setStatus(novoStatus);
+        tarefa.setStatus(status);
     }
 
     public void excluir(
@@ -63,8 +57,9 @@ public class TarefaService {
                                         .equalsIgnoreCase(titulo));
 
         if (!removido) {
-            throw new IllegalArgumentException(
-                    ERRO_NAO_ENCONTRADA);
+
+            throw new TarefaNaoEncontradaException(
+                    "Tarefa não encontrada.");
         }
     }
 
@@ -96,7 +91,7 @@ public class TarefaService {
                             + tarefa.getStatus());
 
             System.out.println(
-                    "--------------------");
+                    "---------------");
         });
     }
 
@@ -110,11 +105,13 @@ public class TarefaService {
             String titulo,
             String descricao) {
 
-        if (titulo.isBlank()
+        if (titulo == null
+                || descricao == null
+                || titulo.isBlank()
                 || descricao.isBlank()) {
 
-            throw new IllegalArgumentException(
-                    ERRO_CAMPOS);
+            throw new CampoInvalidoException(
+                    "Título e descrição obrigatórios.");
         }
     }
 
@@ -124,8 +121,8 @@ public class TarefaService {
         if (buscarTarefa(titulo)
                 .isPresent()) {
 
-            throw new IllegalArgumentException(
-                    ERRO_DUPLICIDADE);
+            throw new TarefaDuplicadaException(
+                    "Tarefa já cadastrada.");
         }
     }
 
@@ -136,8 +133,7 @@ public class TarefaService {
         return tarefas.stream()
                 .filter(tarefa ->
                         tarefa.getTitulo()
-                                .equalsIgnoreCase(
-                                        titulo))
+                                .equalsIgnoreCase(titulo))
                 .findFirst();
     }
 }
