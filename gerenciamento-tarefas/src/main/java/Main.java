@@ -6,134 +6,268 @@ import java.util.Scanner;
 
 public class Main {
 
+    private static final Scanner sc =
+            new Scanner(System.in);
+
+    private static final UsuarioService
+            usuarioService =
+            new UsuarioService();
+
+    private static final TarefaService
+            tarefaService =
+            new TarefaService();
+
     public static void main(String[] args) {
-
-        Scanner sc = new Scanner(System.in);
-
-        UsuarioService usuarioService = new UsuarioService();
-        TarefaService tarefaService = new TarefaService();
 
         int opcao;
 
         do {
 
-            System.out.println("\n===== SISTEMA DE TAREFAS =====");
-            System.out.println("1 - Cadastrar usuário");
-            System.out.println("2 - Login");
-            System.out.println("3 - Cadastrar tarefa");
-            System.out.println("4 - Alterar status");
-            System.out.println("5 - Relatório");
-            System.out.println("6 - Backup");
-            System.out.println("0 - Sair");
-
-            System.out.print("Escolha: ");
-            opcao = sc.nextInt();
-            sc.nextLine();
+            mostrarMenu();
+            opcao = lerOpcao();
 
             try {
 
                 switch (opcao) {
 
-                    case 1:
+                    case 1 -> cadastrarUsuario();
 
-                        System.out.print("Nome: ");
-                        String nome = sc.nextLine();
+                    case 2 -> realizarLogin();
 
-                        System.out.print("Login: ");
-                        String login = sc.nextLine();
+                    case 3 -> cadastrarTarefa();
 
-                        System.out.print("Senha: ");
-                        String senha = sc.nextLine();
+                    case 4 -> alterarStatus();
 
-                        usuarioService.cadastrar(nome, login, senha);
+                    case 5 -> tarefaService.relatorio();
 
-                        System.out.println("Usuário cadastrado!");
-                        break;
+                    case 6 -> excluirTarefa();
 
-                    case 2:
+                    case 0 ->
+                            System.out.println(
+                                    "Saindo do sistema...");
 
-                        System.out.print("Login: ");
-                        String loginUsuario = sc.nextLine();
-
-                        System.out.print("Senha: ");
-                        String senhaUsuario = sc.nextLine();
-
-                        boolean logado = usuarioService.login(loginUsuario, senhaUsuario);
-
-                        if (logado) {
-                            System.out.println("Login realizado!");
-                        } else {
-                            System.out.println("Login inválido!");
-                        }
-
-                        break;
-
-                    case 3:
-
-                        System.out.print("Título: ");
-                        String titulo = sc.nextLine();
-
-                        System.out.print("Descrição: ");
-                        String descricao = sc.nextLine();
-
-                        tarefaService.cadastrar(titulo, descricao);
-
-                        System.out.println("Tarefa cadastrada!");
-                        break;
-
-                    case 4:
-
-                        System.out.print("Título da tarefa: ");
-                        String tituloTarefa = sc.nextLine();
-
-                        System.out.println("1 - PENDENTE");
-                        System.out.println("2 - EM_ANDAMENTO");
-                        System.out.println("3 - CONCLUIDA");
-
-                        int status = sc.nextInt();
-                        sc.nextLine();
-
-                        StatusTarefa novoStatus;
-
-                        switch (status) {
-                            case 1:
-                                novoStatus = StatusTarefa.PENDENTE;
-                                break;
-                            case 2:
-                                novoStatus = StatusTarefa.EM_ANDAMENTO;
-                                break;
-                            case 3:
-                                novoStatus = StatusTarefa.CONCLUIDA;
-                                break;
-                            default:
-                                throw new IllegalArgumentException("Status inválido");
-                        }
-
-                        tarefaService.alterarStatus(
-                                tituloTarefa,
-                                novoStatus);
-
-                        System.out.println("Status alterado!");
-                        break;
-
-                    case 5:
-                        tarefaService.relatorio();
-                        break;
-
-                    case 0:
-                        System.out.println("Saindo...");
-                        break;
-
-                    default:
-                        System.out.println("Opção inválida!");
+                    default ->
+                            System.out.println(
+                                    "Opção inválida.");
                 }
 
             } catch (Exception e) {
-                System.out.println("Erro: " + e.getMessage());
+
+                System.out.println(
+                        "Erro: "
+                                + e.getMessage());
             }
 
         } while (opcao != 0);
 
         sc.close();
+    }
+
+    private static void mostrarMenu() {
+
+        System.out.println(
+                "\n===== SISTEMA DE TAREFAS =====");
+
+        System.out.println(
+                "1 - Cadastrar usuário");
+
+        System.out.println(
+                "2 - Login");
+
+        System.out.println(
+                "3 - Cadastrar tarefa");
+
+        System.out.println(
+                "4 - Alterar status");
+
+        System.out.println(
+                "5 - Relatório");
+
+        System.out.println(
+                "6 - Excluir tarefa");
+
+        System.out.println(
+                "0 - Sair");
+
+        System.out.print(
+                "Escolha: ");
+    }
+
+    private static int lerOpcao() {
+
+        try {
+
+            return Integer.parseInt(
+                    sc.nextLine());
+
+        } catch (
+                NumberFormatException e) {
+
+            System.out.println(
+                    "Digite apenas números.");
+
+            return -1;
+        }
+    }
+
+    private static void cadastrarUsuario() {
+
+        System.out.print(
+                "Nome: ");
+
+        String nome =
+                sc.nextLine();
+
+        System.out.print(
+                "Login: ");
+
+        String login =
+                sc.nextLine();
+
+        System.out.print(
+                "Senha: ");
+
+        String senha =
+                sc.nextLine();
+
+        usuarioService.cadastrar(
+                nome,
+                login,
+                senha);
+
+        System.out.println(
+                "Usuário cadastrado com sucesso!");
+    }
+
+    private static void realizarLogin() {
+
+        System.out.print(
+                "Login: ");
+
+        String login =
+                sc.nextLine();
+
+        System.out.print(
+                "Senha: ");
+
+        String senha =
+                sc.nextLine();
+
+        boolean logado =
+                usuarioService.login(
+                        login,
+                        senha);
+
+        System.out.println(
+                logado
+                        ? "Login realizado com sucesso!"
+                        : "Login inválido.");
+    }
+
+    private static void cadastrarTarefa() {
+
+        System.out.print(
+                "Título: ");
+
+        String titulo =
+                sc.nextLine();
+
+        System.out.print(
+                "Descrição: ");
+
+        String descricao =
+                sc.nextLine();
+
+        tarefaService.cadastrar(
+                titulo,
+                descricao);
+
+        System.out.println(
+                "Tarefa cadastrada com sucesso!");
+    }
+
+    private static void alterarStatus() {
+
+        System.out.print(
+                "Título da tarefa: ");
+
+        String titulo =
+                sc.nextLine();
+
+        StatusTarefa status =
+                obterStatus();
+
+        if (status == null) {
+            return;
+        }
+
+        tarefaService.alterarStatus(
+                titulo,
+                status);
+
+        System.out.println(
+                "Status alterado com sucesso!");
+    }
+
+    private static StatusTarefa obterStatus() {
+
+        System.out.println(
+                "\n1 - PENDENTE");
+
+        System.out.println(
+                "2 - EM_ANDAMENTO");
+
+        System.out.println(
+                "3 - CONCLUIDA");
+
+        try {
+
+            int opcao =
+                    Integer.parseInt(
+                            sc.nextLine());
+
+            return switch (opcao) {
+
+                case 1 ->
+                        StatusTarefa.PENDENTE;
+
+                case 2 ->
+                        StatusTarefa.EM_ANDAMENTO;
+
+                case 3 ->
+                        StatusTarefa.CONCLUIDA;
+
+                default -> {
+
+                    System.out.println(
+                            "Status inválido.");
+
+                    yield null;
+                }
+            };
+
+        } catch (
+                NumberFormatException e) {
+
+            System.out.println(
+                    "Digite um número válido.");
+
+            return null;
+        }
+    }
+
+    private static void excluirTarefa() {
+
+        System.out.print(
+                "Título da tarefa: ");
+
+        String titulo =
+                sc.nextLine();
+
+        tarefaService.excluir(
+                titulo);
+
+        System.out.println(
+                "Tarefa excluída com sucesso!");
     }
 }
