@@ -5,79 +5,139 @@ import model.Tarefa;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TarefaService {
 
-    private List<Tarefa> tarefas = new ArrayList<>();
+    private final List<Tarefa> tarefas;
 
-    public void cadastrar(String titulo, String descricao) {
+    private static final String ERRO_CAMPOS =
+            "Campos vazios";
 
-        if (titulo.isEmpty() || descricao.isEmpty()) {
-            throw new IllegalArgumentException("Campos vazios");
-        }
+    private static final String ERRO_DUPLICIDADE =
+            "Tarefa já existe";
 
-        for (Tarefa tarefa : tarefas) {
-            if (tarefa.getTitulo().equalsIgnoreCase(titulo)) {
-                throw new IllegalArgumentException("Tarefa já existe");
-            }
-        }
+    private static final String ERRO_NAO_ENCONTRADA =
+            "Tarefa não encontrada";
 
-        tarefas.add(new Tarefa(titulo, descricao));
+    public TarefaService() {
+        this.tarefas = new ArrayList<>();
+    }
+
+    public void cadastrar(
+            String titulo,
+            String descricao) {
+
+        validarCampos(
+                titulo,
+                descricao);
+
+        validarDuplicidade(titulo);
+
+        tarefas.add(
+                new Tarefa(
+                        titulo,
+                        descricao));
     }
 
     public void alterarStatus(
             String titulo,
             StatusTarefa novoStatus) {
 
-        for (Tarefa tarefa : tarefas) {
+        Tarefa tarefa =
+                buscarTarefa(titulo)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        ERRO_NAO_ENCONTRADA));
 
-            if (tarefa.getTitulo()
-                    .equalsIgnoreCase(titulo)) {
-
-                tarefa.setStatus(novoStatus);
-                return;
-            }
-        }
-
-        throw new IllegalArgumentException("Tarefa não encontrada");
+        tarefa.setStatus(novoStatus);
     }
 
-    public void excluir(String titulo) {
+    public void excluir(
+            String titulo) {
 
-        boolean removido = tarefas.removeIf(
-                tarefa -> tarefa.getTitulo()
-                        .equalsIgnoreCase(titulo));
+        boolean removido =
+                tarefas.removeIf(
+                        tarefa ->
+                                tarefa.getTitulo()
+                                        .equalsIgnoreCase(titulo));
 
         if (!removido) {
-            throw new IllegalArgumentException("Tarefa não encontrada");
+            throw new IllegalArgumentException(
+                    ERRO_NAO_ENCONTRADA);
         }
     }
 
     public void relatorio() {
 
         if (tarefas.isEmpty()) {
-            System.out.println("Nenhuma tarefa cadastrada.");
+
+            System.out.println(
+                    "Nenhuma tarefa cadastrada.");
+
             return;
         }
 
-        System.out.println("\n===== RELATÓRIO =====");
+        System.out.println(
+                "\n===== RELATÓRIO =====");
 
-        for (Tarefa tarefa : tarefas) {
+        tarefas.forEach(tarefa -> {
 
-            System.out.println("Título: "
-                    + tarefa.getTitulo());
+            System.out.println(
+                    "Título: "
+                            + tarefa.getTitulo());
 
-            System.out.println("Descrição: "
-                    + tarefa.getDescricao());
+            System.out.println(
+                    "Descrição: "
+                            + tarefa.getDescricao());
 
-            System.out.println("Status: "
-                    + tarefa.getStatus());
+            System.out.println(
+                    "Status: "
+                            + tarefa.getStatus());
 
-            System.out.println("--------------------");
+            System.out.println(
+                    "--------------------");
+        });
+    }
+
+    public List<Tarefa>
+    listarTarefas() {
+
+        return tarefas;
+    }
+
+    private void validarCampos(
+            String titulo,
+            String descricao) {
+
+        if (titulo.isBlank()
+                || descricao.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    ERRO_CAMPOS);
         }
     }
 
-    public List<Tarefa> listarTarefas() {
-        return tarefas;
+    private void validarDuplicidade(
+            String titulo) {
+
+        if (buscarTarefa(titulo)
+                .isPresent()) {
+
+            throw new IllegalArgumentException(
+                    ERRO_DUPLICIDADE);
+        }
+    }
+
+    private Optional<Tarefa>
+    buscarTarefa(
+            String titulo) {
+
+        return tarefas.stream()
+                .filter(tarefa ->
+                        tarefa.getTitulo()
+                                .equalsIgnoreCase(
+                                        titulo))
+                .findFirst();
     }
 }
