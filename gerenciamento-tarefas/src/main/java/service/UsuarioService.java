@@ -11,17 +11,17 @@ public class UsuarioService {
 
     public void cadastrar(String nome, String login, String senha) {
 
-        if (nome.isBlank() || login.isBlank() || senha.isBlank()) {
-            throw new IllegalArgumentException("Campos obrigatórios");
+        if (nome.isEmpty() || login.isEmpty() || senha.isEmpty()) {
+            throw new IllegalArgumentException("Campos não podem estar vazios");
         }
 
-        if (senha.length() < 6) {
-            throw new IllegalArgumentException("Senha deve ter no mínimo 6 caracteres");
+        if (senha.length() < 4) {
+            throw new IllegalArgumentException("Senha muito curta");
         }
 
         for (Usuario usuario : usuarios) {
             if (usuario.getLogin().equals(login)) {
-                throw new IllegalArgumentException("Login já existe");
+                throw new IllegalArgumentException("Login já cadastrado");
             }
         }
 
@@ -30,7 +30,7 @@ public class UsuarioService {
 
     public boolean login(String login, String senha) {
 
-        if (login.isBlank() || senha.isBlank()) {
+        if (login.isEmpty() || senha.isEmpty()) {
             return false;
         }
 

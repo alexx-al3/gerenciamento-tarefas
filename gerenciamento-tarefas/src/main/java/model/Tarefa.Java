@@ -24,14 +24,7 @@ public class Tarefa {
         return status;
     }
 
-    public void alterarStatus(StatusTarefa novoStatus) {
-        this.status = novoStatus;
-    }
-
-    @Override
-    public String toString() {
-        return "Título: " + titulo +
-                " | Descrição: " + descricao +
-                " | Status: " + status;
+    public void setStatus(StatusTarefa status) {
+        this.status = status;
     }
 }
