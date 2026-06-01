@@ -23,10 +23,4 @@ public class Usuario {
     public String getSenha() {
         return senha;
     }
-
-    @Override
-    public String toString() {
-        return "Nome: " + nome +
-                " | Login: " + login;
-    }
 }

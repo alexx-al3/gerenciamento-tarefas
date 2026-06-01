@@ -1,18 +1,37 @@
-package com.example;
+import org.junit.jupiter.api.Test;
+import service.TarefaService;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
-
-/**
- * Unit test for simple App.
- */
 public class TarefaTest {
-    /**
-     * Rigorous Test :-)
-     */
+
     @Test
-    public void shouldAnswerWithTrue() {
-        assertTrue(true);
+    void testeCadastrarTarefa() {
+
+        TarefaService service = new TarefaService();
+
+        service.cadastrar(
+                "Estudar Java",
+                "Revisar POO");
+
+        assertEquals(
+                1,
+                service.listarTarefas().size());
+    }
+
+    @Test
+    void testeDuplicidadeTarefa() {
+
+        TarefaService service = new TarefaService();
+
+        service.cadastrar(
+                "Estudar",
+                "Java");
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.cadastrar(
+                        "Estudar",
+                        "Outra descrição"));
     }
 }
