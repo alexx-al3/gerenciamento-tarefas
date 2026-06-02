@@ -1,50 +1,113 @@
 package service;
 
+import exception.CampoInvalidoException;
+import exception.UsuarioDuplicadoException;
 import model.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UsuarioService {
 
-    private List<Usuario> usuarios = new ArrayList<>();
+    private final List<Usuario> usuarios;
 
-    public void cadastrar(String nome, String login, String senha) {
-
-        if (nome.isEmpty() || login.isEmpty() || senha.isEmpty()) {
-            throw new IllegalArgumentException("Campos não podem estar vazios");
-        }
-
-        if (senha.length() < 4) {
-            throw new IllegalArgumentException("Senha muito curta");
-        }
-
-        for (Usuario usuario : usuarios) {
-            if (usuario.getLogin().equals(login)) {
-                throw new IllegalArgumentException("Login já cadastrado");
-            }
-        }
-
-        usuarios.add(new Usuario(nome, login, senha));
+    public UsuarioService() {
+        usuarios = new ArrayList<>();
     }
 
-    public boolean login(String login, String senha) {
+    public void cadastrar(
+            String nome,
+            String login,
+            String senha) {
 
-        if (login.isEmpty() || senha.isEmpty()) {
+        validarCampos(
+                nome,
+                login,
+                senha);
+
+        validarSenha(senha);
+
+        validarDuplicidade(login);
+
+        usuarios.add(
+                new Usuario(
+                        nome,
+                        login,
+                        senha));
+    }
+
+    public boolean login(
+            String login,
+            String senha) {
+
+        if (login == null
+                || senha == null
+                || login.isBlank()
+                || senha.isBlank()) {
+
             return false;
         }
 
-        for (Usuario usuario : usuarios) {
-            if (usuario.getLogin().equals(login)
-                    && usuario.getSenha().equals(senha)) {
-                return true;
-            }
-        }
-
-        return false;
+        return buscarUsuario(login)
+                .map(usuario ->
+                        usuario.getSenha()
+                                .equals(senha))
+                .orElse(false);
     }
 
-    public List<Usuario> listarUsuarios() {
+    public List<Usuario>
+    listarUsuarios() {
+
         return usuarios;
+    }
+
+    private void validarCampos(
+            String nome,
+            String login,
+            String senha) {
+
+        if (nome == null
+                || login == null
+                || senha == null
+                || nome.isBlank()
+                || login.isBlank()
+                || senha.isBlank()) {
+
+            throw new CampoInvalidoException(
+                    "Todos os campos devem ser preenchidos.");
+        }
+    }
+
+    private void validarSenha(
+            String senha) {
+
+        if (senha.length() < 4) {
+
+            throw new CampoInvalidoException(
+                    "Senha deve ter no mínimo 4 caracteres.");
+        }
+    }
+
+    private void validarDuplicidade(
+            String login) {
+
+        if (buscarUsuario(login)
+                .isPresent()) {
+
+            throw new UsuarioDuplicadoException(
+                    "Login já cadastrado.");
+        }
+    }
+
+    private Optional<Usuario>
+    buscarUsuario(
+            String login) {
+
+        return usuarios.stream()
+                .filter(usuario ->
+                        usuario.getLogin()
+                                .equalsIgnoreCase(login))
+                .findFirst();
     }
 }
