@@ -1,55 +1,46 @@
 package util;
 
 import model.Tarefa;
-import model.Usuario;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class BackupManager {
 
-    private static final String USUARIOS_FILE = "usuarios.txt";
-    private static final String TAREFAS_FILE = "tarefas.txt";
+    private static final String
+            ARQUIVO_BACKUP =
+            "backup_tarefas.txt";
 
-    public static void salvarUsuarios(List<Usuario> usuarios) {
+    public static void realizarBackup(
+            List<Tarefa> tarefas) {
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(USUARIOS_FILE))) {
-
-            for (Usuario usuario : usuarios) {
-
-                writer.write(
-                        usuario.getNome() + ";" +
-                                usuario.getLogin() + ";" +
-                                usuario.getSenha());
-
-                writer.newLine();
-            }
-
-            System.out.println("Backup de usuários realizado!");
-
-        } catch (IOException e) {
-            System.out.println("Erro ao salvar usuários: " + e.getMessage());
-        }
-    }
-
-    public static void salvarTarefas(List<Tarefa> tarefas) {
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TAREFAS_FILE))) {
+        try (BufferedWriter writer =
+                     new BufferedWriter(
+                             new FileWriter(
+                                     ARQUIVO_BACKUP))) {
 
             for (Tarefa tarefa : tarefas) {
 
                 writer.write(
-                        tarefa.getTitulo() + ";" +
-                                tarefa.getDescricao() + ";" +
-                                tarefa.getStatus());
+                        tarefa.getTitulo()
+                                + ";"
+                                + tarefa.getDescricao()
+                                + ";"
+                                + tarefa.getStatus());
 
                 writer.newLine();
             }
 
-            System.out.println("Backup de tarefas realizado!");
+            System.out.println(
+                    "Backup realizado com sucesso!");
 
         } catch (IOException e) {
-            System.out.println("Erro ao salvar tarefas: " + e.getMessage());
+
+            System.out.println(
+                    "Erro ao realizar backup: "
+                            + e.getMessage());
         }
     }
 }

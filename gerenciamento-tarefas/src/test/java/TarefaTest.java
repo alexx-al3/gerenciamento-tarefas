@@ -1,3 +1,4 @@
+import exception.TarefaDuplicadaException;
 import org.junit.jupiter.api.Test;
 import service.TarefaService;
 
@@ -8,7 +9,8 @@ public class TarefaTest {
     @Test
     void testeCadastrarTarefa() {
 
-        TarefaService service = new TarefaService();
+        TarefaService service =
+                new TarefaService();
 
         service.cadastrar(
                 "Estudar Java",
@@ -16,20 +18,22 @@ public class TarefaTest {
 
         assertEquals(
                 1,
-                service.listarTarefas().size());
+                service.listarTarefas()
+                        .size());
     }
 
     @Test
     void testeDuplicidadeTarefa() {
 
-        TarefaService service = new TarefaService();
+        TarefaService service =
+                new TarefaService();
 
         service.cadastrar(
                 "Estudar",
                 "Java");
 
         assertThrows(
-                IllegalArgumentException.class,
+                TarefaDuplicadaException.class,
                 () -> service.cadastrar(
                         "Estudar",
                         "Outra descrição"));

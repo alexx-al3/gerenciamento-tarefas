@@ -1,25 +1,19 @@
 package service;
 
+import exception.CampoInvalidoException;
+import exception.UsuarioDuplicadoException;
 import model.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UsuarioService {
 
     private final List<Usuario> usuarios;
 
-    private static final String ERRO_CAMPOS =
-            "Campos não podem estar vazios";
-
-    private static final String ERRO_SENHA =
-            "Senha muito curta";
-
-    private static final String ERRO_LOGIN =
-            "Login já cadastrado";
-
     public UsuarioService() {
-        this.usuarios = new ArrayList<>();
+        usuarios = new ArrayList<>();
     }
 
     public void cadastrar(
@@ -27,20 +21,31 @@ public class UsuarioService {
             String login,
             String senha) {
 
-        validarCampos(nome, login, senha);
+        validarCampos(
+                nome,
+                login,
+                senha);
+
         validarSenha(senha);
+
         validarDuplicidade(login);
 
         usuarios.add(
-                new Usuario(nome, login, senha));
+                new Usuario(
+                        nome,
+                        login,
+                        senha));
     }
 
     public boolean login(
             String login,
             String senha) {
 
-        if (login.isBlank()
+        if (login == null
+                || senha == null
+                || login.isBlank()
                 || senha.isBlank()) {
+
             return false;
         }
 
@@ -51,7 +56,9 @@ public class UsuarioService {
                 .orElse(false);
     }
 
-    public List<Usuario> listarUsuarios() {
+    public List<Usuario>
+    listarUsuarios() {
+
         return usuarios;
     }
 
@@ -60,12 +67,15 @@ public class UsuarioService {
             String login,
             String senha) {
 
-        if (nome.isBlank()
+        if (nome == null
+                || login == null
+                || senha == null
+                || nome.isBlank()
                 || login.isBlank()
                 || senha.isBlank()) {
 
-            throw new IllegalArgumentException(
-                    ERRO_CAMPOS);
+            throw new CampoInvalidoException(
+                    "Todos os campos devem ser preenchidos.");
         }
     }
 
@@ -73,23 +83,26 @@ public class UsuarioService {
             String senha) {
 
         if (senha.length() < 4) {
-            throw new IllegalArgumentException(
-                    ERRO_SENHA);
+
+            throw new CampoInvalidoException(
+                    "Senha deve ter no mínimo 4 caracteres.");
         }
     }
 
     private void validarDuplicidade(
             String login) {
 
-        if (buscarUsuario(login).isPresent()) {
+        if (buscarUsuario(login)
+                .isPresent()) {
 
-            throw new IllegalArgumentException(
-                    ERRO_LOGIN);
+            throw new UsuarioDuplicadoException(
+                    "Login já cadastrado.");
         }
     }
 
-    private java.util.Optional<Usuario>
-    buscarUsuario(String login) {
+    private Optional<Usuario>
+    buscarUsuario(
+            String login) {
 
         return usuarios.stream()
                 .filter(usuario ->

@@ -12,10 +12,12 @@ import java.util.Optional;
 
 public class TarefaService {
 
-    private final List<Tarefa> tarefas;
+    private final List<Tarefa>
+            tarefas;
 
     public TarefaService() {
-        tarefas = new ArrayList<>();
+        tarefas =
+                new ArrayList<>();
     }
 
     public void cadastrar(
@@ -26,7 +28,8 @@ public class TarefaService {
                 titulo,
                 descricao);
 
-        validarDuplicidade(titulo);
+        validarDuplicidade(
+                titulo);
 
         tarefas.add(
                 new Tarefa(
@@ -54,7 +57,8 @@ public class TarefaService {
                 tarefas.removeIf(
                         tarefa ->
                                 tarefa.getTitulo()
-                                        .equalsIgnoreCase(titulo));
+                                        .equalsIgnoreCase(
+                                                titulo));
 
         if (!removido) {
 
@@ -76,23 +80,17 @@ public class TarefaService {
         System.out.println(
                 "\n===== RELATÓRIO =====");
 
-        tarefas.forEach(tarefa -> {
+        System.out.printf(
+                "%-20s %-30s %-20s%n",
+                "TÍTULO",
+                "DESCRIÇÃO",
+                "STATUS");
 
-            System.out.println(
-                    "Título: "
-                            + tarefa.getTitulo());
+        System.out.println(
+                "--------------------------------------------------------------");
 
-            System.out.println(
-                    "Descrição: "
-                            + tarefa.getDescricao());
-
-            System.out.println(
-                    "Status: "
-                            + tarefa.getStatus());
-
-            System.out.println(
-                    "---------------");
-        });
+        tarefas.forEach(
+                System.out::println);
     }
 
     public List<Tarefa>
@@ -133,7 +131,8 @@ public class TarefaService {
         return tarefas.stream()
                 .filter(tarefa ->
                         tarefa.getTitulo()
-                                .equalsIgnoreCase(titulo))
+                                .equalsIgnoreCase(
+                                        titulo))
                 .findFirst();
     }
 }

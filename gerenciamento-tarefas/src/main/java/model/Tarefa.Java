@@ -6,10 +6,14 @@ public class Tarefa {
     private String descricao;
     private StatusTarefa status;
 
-    public Tarefa(String titulo, String descricao) {
+    public Tarefa(
+            String titulo,
+            String descricao) {
+
         this.titulo = titulo;
         this.descricao = descricao;
-        this.status = StatusTarefa.PENDENTE;
+        this.status =
+                StatusTarefa.PENDENTE;
     }
 
     public String getTitulo() {
@@ -24,7 +28,19 @@ public class Tarefa {
         return status;
     }
 
-    public void setStatus(StatusTarefa status) {
+    public void setStatus(
+            StatusTarefa status) {
+
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+
+        return String.format(
+                "%-20s %-30s %-20s",
+                titulo,
+                descricao,
+                status);
     }
 }
